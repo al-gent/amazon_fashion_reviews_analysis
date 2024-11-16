@@ -10,3 +10,6 @@ Project Overview
         Topic modeling to uncover common themes in reviews.
         Building a recommendation system for music genres.
         Comparing the popularity of CDs versus vinyl records.
+
+
+Data from https://github.com/hyp1231/AmazonReviews2023
