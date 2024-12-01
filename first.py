@@ -5,26 +5,21 @@ from pyspark.rdd import RDD
 
 sc = SparkContext(appName="SubsetJSON")
 
+# local_meta = '/Users/adamgent/dc/project/subset_meta.jsonl'
+# local_data = "/Users/adamgent/dc/project/subsetAF.jsonl"
+
 meta_file = 's3://msds-694-cohort-13-4/data/meta_Amazon_Fashion.jsonl'
 data_file = 's3://msds-694-cohort-13-4/data/Amazon_Fashion.jsonl'
 data = []
 
-with open(data_file, 'r') as fp:
-    for i, line in enumerate(fp):
-        data.append(json.loads(line))
+data_rdd = sc.textFile(data_file).map(json.loads)
+meta_rdd = sc.textFile(meta_file).map(json.loads)
 
-metadata = []
-with open(meta_file, 'r') as fp:
-    for i, line in enumerate(fp):
-        metadata.append(json.loads(line))
 
-subset_rdd = sc.parallelize(data)
-meta_subset_rdd = sc.parallelize(metadata)
-
-meta_rdd = meta_subset_rdd.map(lambda review: list(review.values()))
+meta_rdd = meta_rdd.map(lambda review: list(review.values()))
 meta_pair_rdd = meta_rdd.map(lambda row: (row[-2], row[:-2] + [row[-1]]))
 
-values_rdd = subset_rdd.map(lambda review: list(review.values()))
+values_rdd = data_rdd.map(lambda review: list(review.values()))
 
 pair_rdd = values_rdd.map(lambda row: (row[5], row[:5] + row[6:]))
 
