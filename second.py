@@ -12,11 +12,13 @@ local_data = "/Users/adamgent/dc/project/subsetAF.jsonl"
 sc = SparkSession.builder.appName("JSONReader").getOrCreate()
 sc.sparkContext.setLogLevel("OFF")
 
-rdd = sc.sparkContext.textFile(data_file)
+# rdd = sc.sparkContext.textFile(data_file)
+rdd = sc.sparkContext.textFile(local_data)
 
 reviews_rdd = rdd.map(lambda line: json.loads(line.strip()))
 
-rdd_2 = sc.sparkContext.textFile(meta_file)
+# rdd_2 = sc.sparkContext.textFile(meta_file)
+rdd_2 = sc.sparkContext.textFile(local_meta)
 
 meta_rdd = rdd_2.map(lambda line: json.loads(line.strip()))
 
@@ -78,6 +80,7 @@ print('----------- Distribution of Ratings -----------')
 for row in rating_dist.collect():
     print(row.rating,":", row[1])
 print('----------- End Distribution of Ratings -----------')
+print('\n')
 
 from pyspark.sql.functions import col
 
@@ -95,6 +98,7 @@ print(f'Total Verified Reviews: {total_verified_reviews}')
 print(f'Total Reviews: {total_reviews}')
 print(f'Non Verified Reviews: {non_verified_reviews}')
 print('----------- End Verified Reviews -----------')
+print('\n')
 
 augmented_rdd = (
     reviews_rdd
@@ -109,8 +113,10 @@ print('----------- Average Title Length by Rating -----------')
 
 grouped_rdd = augmented_rdd.groupByKey()
 average_rdd = grouped_rdd.mapValues(lambda lengths: sum(lengths) / len(lengths))
+
 result = average_rdd.collect()
-for row in rating_dist.collect():
-    print(row[0],":", row[1])
+result = sorted(result)
+for row in result:
+    print(row[0],":", round(row[1], 1))
 print('----------- End Average Title Length by Rating -----------')
 
