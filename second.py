@@ -72,7 +72,7 @@ print('----------- Average Review Length by Rating Category -----------')
 for row in result_df.collect():
     print(row.rating_category,':', row.avg_review_length)
 print('----------- End Average Review Length by Rating Category -----------')
-# print('\n')
+print('\n')
 rating_dist = combined_df.groupBy("rating").count().orderBy("rating")
 print('----------- Distribution of Ratings -----------')
 for row in rating_dist.collect():
@@ -89,8 +89,28 @@ verified_df = combined_df.filter(col('verified_purchase') == 'true')
 total_verified_reviews = verified_df.count()
 total_reviews = combined_df.count()
 non_verified_reviews = total_reviews - total_verified_reviews
+print('----------- Verified Reviews -----------')
 
 print(f'Total Verified Reviews: {total_verified_reviews}')
 print(f'Total Reviews: {total_reviews}')
 print(f'Non Verified Reviews: {non_verified_reviews}')
+print('----------- End Verified Reviews -----------')
+
+augmented_rdd = (
+    reviews_rdd
+    .map(
+        lambda record: (
+            record["rating"], 
+            len(record["title"])
+        )
+    )
+)
+print('----------- Average Title Length by Rating -----------')
+
+grouped_rdd = augmented_rdd.groupByKey()
+average_rdd = grouped_rdd.mapValues(lambda lengths: sum(lengths) / len(lengths))
+result = average_rdd.collect()
+for row in rating_dist.collect():
+    print(row[0],":", row[1])
+print('----------- End Average Title Length by Rating -----------')
 
