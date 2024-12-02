@@ -12,13 +12,13 @@ local_data = "/Users/adamgent/dc/project/subsetAF.jsonl"
 sc = SparkSession.builder.appName("JSONReader").getOrCreate()
 sc.sparkContext.setLogLevel("OFF")
 
-# rdd = sc.sparkContext.textFile(data_file)
-rdd = sc.sparkContext.textFile(local_data)
+rdd = sc.sparkContext.textFile(data_file)
+# rdd = sc.sparkContext.textFile(local_data)
 
 reviews_rdd = rdd.map(lambda line: json.loads(line.strip()))
 
-# rdd_2 = sc.sparkContext.textFile(meta_file)
-rdd_2 = sc.sparkContext.textFile(local_meta)
+rdd_2 = sc.sparkContext.textFile(meta_file)
+# rdd_2 = sc.sparkContext.textFile(local_meta)
 
 meta_rdd = rdd_2.map(lambda line: json.loads(line.strip()))
 
